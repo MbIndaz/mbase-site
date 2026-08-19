@@ -99,10 +99,23 @@ of `src/components/Contact.jsx`. Submissions arrive in your email.
 
 ## Deploying (free)
 
-1. Push this folder to a GitHub repo
-2. Go to Cloudflare Pages → Create project → connect the repo
-3. Build command: `npm run build` — Output directory: `dist`
-4. Deploy
+**The repo is already initialized locally** with one commit. To push it to
+GitHub:
+
+1. On github.com, click **New repository**. Name it (e.g. `mbuilt-site`).
+   Do **not** initialize with a README, .gitignore, or license — this
+   project already has those, and it'll cause a conflict.
+2. GitHub will show you a remote URL. Back in this project's terminal:
+
+   ```bash
+   git remote add origin https://github.com/YOUR-USERNAME/mbuilt-site.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. Go to Cloudflare Pages → Create project → connect the repo
+4. Build command: `npm run build` — Output directory: `dist`
+5. Deploy
 
 Every push to `main` redeploys automatically. You get a free
 `yourproject.pages.dev` URL immediately; point a custom domain at it once
