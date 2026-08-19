@@ -102,13 +102,13 @@ of `src/components/Contact.jsx`. Submissions arrive in your email.
 **The repo is already initialized locally** with one commit. To push it to
 GitHub:
 
-1. On github.com, click **New repository**. Name it (e.g. `mbuilt-site`).
+1. On github.com, click **New repository**. Name it (e.g. `mbase-site`).
    Do **not** initialize with a README, .gitignore, or license — this
    project already has those, and it'll cause a conflict.
 2. GitHub will show you a remote URL. Back in this project's terminal:
 
    ```bash
-   git remote add origin https://github.com/YOUR-USERNAME/mbuilt-site.git
+   git remote add origin https://github.com/YOUR-USERNAME/mbase-site.git
    git branch -M main
    git push -u origin main
    ```

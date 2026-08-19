@@ -6,9 +6,10 @@
 
 export const site = {
   // --- Identity -------------------------------------------------
-  // Working name — swap freely, this is the only place it lives.
-  // Run the legal checks (see README) before treating it as final.
-  name: 'MBuilt',
+  // Chosen name — domain available, no obvious conflicts found.
+  // Still worth running the formal IRN + TMview checks (see README)
+  // before filing anything official.
+  name: 'MBase',
   shortName: 'MB',
   tagline: 'Websites and apps for Irish businesses, built in Portugal.',
 
