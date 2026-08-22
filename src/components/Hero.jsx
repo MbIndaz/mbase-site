@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { site, deployLines } from '../siteConfig'
+import { deployLines } from '../siteConfig'
 import './Hero.css'
 
 /* The terminal is the signature element: it shows what the studio
@@ -53,18 +53,16 @@ export default function Hero() {
     <section className="hero" id="top">
       <div className="wrap hero-inner">
         <div className="hero-copy">
-          <span className="eyebrow">
-            {site.baseCity}, {site.baseCountry} → {site.servingMarket}
-          </span>
+          <span className="eyebrow">Web &amp; app studio</span>
 
           <h1 className="hero-title">
             Your business deserves a site that <em>actually</em> works.
           </h1>
 
           <p className="lede">
-            We build fast, modern websites and apps for small businesses in{' '}
-            {site.servingMarket} — fixed scope, fixed price, no hidden
-            costs. One team, start to finish.
+            We build fast, modern websites and apps for small businesses —
+            fixed scope, fixed price, no hidden costs. One team, start to
+            finish.
           </p>
 
           <div className="hero-actions">

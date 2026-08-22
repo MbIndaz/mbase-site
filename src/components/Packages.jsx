@@ -1,11 +1,17 @@
 import { packages } from '../siteConfig'
 import './Packages.css'
 
+// Clicking a plan's CTA carries the choice over to the contact form
+// without a page reload — Contact.jsx listens for this.
+function selectPlan(id) {
+  window.dispatchEvent(new CustomEvent('mbase-plan-select', { detail: id }))
+}
+
 export default function Packages() {
   return (
     <section className="section packages" id="packages">
       <div className="wrap">
-        <span className="eyebrow">Website packages</span>
+        <span className="eyebrow">Packages</span>
         <h2 className="section-title">Pick a starting point.</h2>
         <p className="lede">
           Every package is quoted properly before anything begins. Timelines
@@ -24,8 +30,16 @@ export default function Packages() {
               <p className="pkg-subtitle">{p.subtitle}</p>
 
               <div className="pkg-price">
-                <span className="pkg-from">from</span>
-                <span className="pkg-amount">{p.price}</span>
+                {p.customQuote ? (
+                  <span className="pkg-amount pkg-amount-custom">
+                    {p.price}
+                  </span>
+                ) : (
+                  <>
+                    <span className="pkg-from">from</span>
+                    <span className="pkg-amount">{p.price}</span>
+                  </>
+                )}
               </div>
 
               <ul className="pkg-features">
@@ -41,6 +55,7 @@ export default function Packages() {
 
               <a
                 href="#contact"
+                onClick={() => selectPlan(p.id)}
                 className={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} pkg-cta`}
               >
                 Get a quote
@@ -51,14 +66,7 @@ export default function Packages() {
 
         <p className="pkg-note">
           Hosting, domain, and ongoing maintenance are quoted separately —
-          you own all of it.
-        </p>
-
-        <p className="pkg-app-note">
-          Need an app instead of a website?{' '}
-          <a href="#contact">Tell us about it</a> and we will scope it
-          properly — app projects are quoted individually rather than fit
-          into a fixed tier. Site already live and just needs upkeep? See{' '}
+          you own all of it. Site already live and just needs upkeep? See{' '}
           <a href="#care">care plans</a> below.
         </p>
       </div>

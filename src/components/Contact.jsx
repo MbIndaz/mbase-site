@@ -1,9 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { site } from '../siteConfig'
 import './Contact.css'
 
+// Plan ids that Packages.jsx / Care.jsx are allowed to preselect.
+// Keep this in sync with the option values in the <select> below.
+const VALID_PLANS = [
+  'essential',
+  'standard',
+  'premium',
+  'app',
+  'basic-care',
+  'standard-care',
+  'priority-care',
+]
+
 export default function Contact() {
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
+  const [plan, setPlan] = useState('not-sure')
+
+  // Picks up a plan chosen elsewhere on the page (Packages/Care CTAs),
+  // and also honours a ?plan=xxx link for direct/shareable URLs.
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get('plan')
+    if (fromUrl && VALID_PLANS.includes(fromUrl)) setPlan(fromUrl)
+
+    const onSelect = (e) => {
+      if (VALID_PLANS.includes(e.detail)) setPlan(e.detail)
+    }
+    window.addEventListener('mbase-plan-select', onSelect)
+    return () => window.removeEventListener('mbase-plan-select', onSelect)
+  }, [])
 
   /* ───────────────────────────────────────────────────────
      FORM WIRING — currently inactive on purpose.
@@ -76,13 +102,6 @@ export default function Contact() {
                 </a>
               </li>
             )}
-
-            <li>
-              <span className="cm-label">Based in</span>
-              <span className="cm-value">
-                {site.baseCity}, {site.baseCountry}
-              </span>
-            </li>
           </ul>
         </div>
 
@@ -104,12 +123,19 @@ export default function Contact() {
 
           <div className="field">
             <label htmlFor="package">What are you after?</label>
-            <select id="package" name="package" defaultValue="not-sure">
-              <option value="essential">Essential — simple site</option>
-              <option value="standard">Standard — semi-custom</option>
-              <option value="premium">Premium — custom build</option>
-              <option value="app">An app, not a website</option>
-              <option value="care">A care plan for an existing site</option>
+            <select
+              id="package"
+              name="package"
+              value={plan}
+              onChange={(e) => setPlan(e.target.value)}
+            >
+              <option value="essential">Essential</option>
+              <option value="standard">Standard</option>
+              <option value="premium">Premium</option>
+              <option value="app">App</option>
+              <option value="basic-care">Basic Care</option>
+              <option value="standard-care">Standard Care</option>
+              <option value="priority-care">Priority Care</option>
               <option value="not-sure">Not sure yet</option>
             </select>
           </div>

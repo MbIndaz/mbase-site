@@ -11,7 +11,7 @@ export const site = {
   // before filing anything official.
   name: 'MBase',
   shortName: 'MB',
-  tagline: 'Websites and apps for Irish businesses, built in Portugal.',
+  tagline: 'Fixed-price websites and apps for growing businesses.',
 
   // --- Contact --------------------------------------------------
   // TODO: replace once you buy a domain (see notes)
@@ -27,6 +27,10 @@ export const site = {
   showWhatsapp: true,
 
   // --- Location -------------------------------------------------
+  // Kept for your own reference (invoices, future legal footer) but
+  // deliberately NOT shown in the public copy anymore — positioning
+  // is international now, so the site doesn't call out a base or a
+  // target market.
   baseCity: 'Lisbon',
   baseCountry: 'Portugal',
   servingMarket: 'Ireland',
@@ -80,6 +84,22 @@ export const packages = [
       'Multilingual support',
     ],
     bestFor: 'Established businesses, e-commerce, franchises',
+    featured: false,
+  },
+  {
+    id: 'app',
+    badge: 'Custom scope',
+    name: 'App',
+    subtitle: 'Mobile or web app, built to spec',
+    price: 'Custom',
+    customQuote: true,
+    features: [
+      'iOS, Android, or cross-platform',
+      'Backend & API integration as needed',
+      'App store submission support',
+      'Fixed price agreed after scoping',
+    ],
+    bestFor: 'Businesses that need more than a website can do',
     featured: false,
   },
 ]
@@ -172,5 +192,5 @@ export const deployLines = [
   { text: '✓ built in 1.24s', type: 'ok' },
   { text: '$ deploy --prod', type: 'cmd' },
   { text: 'uploading to edge network...', type: 'dim' },
-  { text: '✓ live at yourbusiness.ie', type: 'success' },
+  { text: '✓ live at yourbusiness.com', type: 'success' },
 ]

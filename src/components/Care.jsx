@@ -1,6 +1,12 @@
 import { carePlans } from '../siteConfig'
 import './Care.css'
 
+// Same mechanism as the website packages — carries the choice to
+// the contact form without a page reload.
+function selectPlan(id) {
+  window.dispatchEvent(new CustomEvent('mbase-plan-select', { detail: id }))
+}
+
 export default function Care() {
   return (
     <section className="section care" id="care">
@@ -42,6 +48,7 @@ export default function Care() {
 
               <a
                 href="#contact"
+                onClick={() => selectPlan(c.id)}
                 className={`btn ${c.featured ? 'btn-primary' : 'btn-ghost'} care-cta`}
               >
                 Start a plan
