@@ -32,20 +32,23 @@ export default function Contact() {
   }, [])
 
   /* ───────────────────────────────────────────────────────
-     FORM WIRING — currently inactive on purpose.
+     FORM WIRING — Web3Forms.
 
-     When you're ready, sign up for a free form service and
-     paste the endpoint below. No backend or server needed.
-       • Web3Forms:  https://web3forms.com
-       • Formspree:  https://formspree.io
+     The URL below is fixed and the same for everyone — what makes
+     submissions land in YOUR inbox is the access_key hidden field
+     rendered in the form further down, pulled from siteConfig.js.
+     Get your key at https://web3forms.com (sign up, verify the
+     email they send you, copy the key into site.web3formsAccessKey).
      ─────────────────────────────────────────────────────── */
-  const FORM_ENDPOINT = '' // TODO: paste endpoint here
+  const FORM_ENDPOINT = 'https://api.web3forms.com/submit'
+  const formReady =
+    site.web3formsAccessKey && site.web3formsAccessKey !== '[FOR INSERT]'
 
   async function handleSubmit(e) {
     e.preventDefault()
 
-    if (!FORM_ENDPOINT) {
-      console.warn('No form endpoint set yet — see Contact.jsx')
+    if (!formReady) {
+      console.warn('No Web3Forms access key set yet — see siteConfig.js')
       setStatus('error')
       return
     }
@@ -106,6 +109,28 @@ export default function Contact() {
         </div>
 
         <form className="contact-form" onSubmit={handleSubmit}>
+          {/* Web3Forms required/optional hidden fields — not shown to
+              the visitor, just carried along with the submission. */}
+          <input
+            type="hidden"
+            name="access_key"
+            value={site.web3formsAccessKey}
+          />
+          <input
+            type="hidden"
+            name="subject"
+            value="New enquiry from the MBase site"
+          />
+          {/* Honeypot: real visitors never see or fill this in (it's
+              visually hidden via CSS), so if it arrives filled in,
+              Web3Forms silently drops the submission as spam. */}
+          <input
+            type="checkbox"
+            name="botcheck"
+            className="hp-field"
+            tabIndex="-1"
+            autoComplete="off"
+          />
           <div className="field">
             <label htmlFor="name">Your name</label>
             <input id="name" name="name" type="text" required />
@@ -160,8 +185,11 @@ export default function Contact() {
           )}
           {status === 'error' && (
             <p className="form-msg form-err">
-              The form is not connected yet. Email {site.email} in the
-              meantime.
+              {formReady
+                ? 'Something went wrong sending that. Please email ' +
+                  site.email +
+                  ' directly.'
+                : `The form isn't connected yet. Email ${site.email} in the meantime.`}
             </p>
           )}
         </form>

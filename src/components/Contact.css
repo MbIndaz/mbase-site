@@ -124,6 +124,17 @@ a.cm-value:hover {
   color: #a63a2d;
 }
 
+/* Honeypot spam trap — hidden from real visitors, but not via
+   display:none, since some bots specifically skip fields hidden
+   that way. Off-screen positioning is harder for bots to detect. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
 @media (max-width: 980px) {
   .contact-inner {
     grid-template-columns: 1fr;

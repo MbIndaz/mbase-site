@@ -14,8 +14,13 @@ export const site = {
   tagline: 'Fixed-price websites and apps for growing businesses.',
 
   // --- Contact --------------------------------------------------
-  // TODO: replace once you buy a domain (see notes)
-  email: '[FOR INSERT]',            // e.g. hello@yourstudio.ie
+  // Using the new business Gmail for now — swap to hello@mbase.com
+  // once the domain + Cloudflare Email Routing are set up.
+  email: 'mbasehq@gmail.com',
+
+  // TODO: from web3forms.com — sign up with mbasehq@gmail.com, verify
+  // the email they send, then paste the access key they give you here.
+  web3formsAccessKey: '[FOR INSERT]',
 
   // TODO: decide on a number — see the phone advice before filling this in
   // Format for the WhatsApp link: country code + number, digits only.
