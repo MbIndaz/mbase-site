@@ -20,7 +20,9 @@ export const site = {
 
   // TODO: from web3forms.com — sign up with mbasehq@gmail.com, verify
   // the email they send, then paste the access key they give you here.
-  web3formsAccessKey: '[FOR INSERT]',
+  web3formsAccessKey: '53b34a89-22be-4d4f-8283-b1eaedb82283',
+
+
 
   // TODO: decide on a number — see the phone advice before filling this in
   // Format for the WhatsApp link: country code + number, digits only.
