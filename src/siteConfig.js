@@ -16,7 +16,7 @@ export const site = {
   // --- Contact --------------------------------------------------
   // Using the new business Gmail for now — swap to hello@mbase.com
   // once the domain + Cloudflare Email Routing are set up.
-  email: 'mbasehq@gmail.com',
+  email: 'team@mbasestudio.com',
 
   // TODO: from web3forms.com — sign up with mbasehq@gmail.com, verify
   // the email they send, then paste the access key they give you here.
