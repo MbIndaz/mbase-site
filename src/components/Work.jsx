@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import './Work.css'
 
 /* NOTE: These are placeholders for concept pieces you build yourself.
@@ -37,6 +38,25 @@ const projects = [
 ]
 
 export default function Work() {
+  const [lightbox, setLightbox] = useState(null)
+
+  // Escape key closes it; also lock page scroll while open so the
+  // background doesn't scroll behind the overlay.
+  useEffect(() => {
+    if (!lightbox) return
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') setLightbox(null)
+    }
+    window.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [lightbox])
+
   return (
     <section className="section work" id="work">
       <div className="wrap">
@@ -52,13 +72,30 @@ export default function Work() {
         <div className="work-grid">
           {projects.map((p) => (
             <article key={p.id} className="work-card">
-              <div className="work-thumb">
+              <div
+                className={`work-thumb ${p.image ? 'is-zoomable' : ''}`}
+                onClick={() => p.image && setLightbox(p)}
+                role={p.image ? 'button' : undefined}
+                tabIndex={p.image ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (p.image && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault()
+                    setLightbox(p)
+                  }
+                }}
+                aria-label={p.image ? `View ${p.name} full size` : undefined}
+              >
                 {p.image ? (
-                  <img
-                    src={p.image}
-                    alt={`${p.name} — ${p.type}`}
-                    loading="lazy"
-                  />
+                  <>
+                    <img
+                      src={p.image}
+                      alt={`${p.name} — ${p.type}`}
+                      loading="lazy"
+                    />
+                    <span className="thumb-zoom-hint" aria-hidden="true">
+                      View
+                    </span>
+                  </>
                 ) : (
                   // TODO: replace with a real screenshot at
                   // /public/work/project-name.jpg
@@ -82,6 +119,33 @@ export default function Work() {
           ))}
         </div>
       </div>
+
+      {lightbox && (
+        <div
+          className="lightbox"
+          onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${lightbox.name} — enlarged view`}
+        >
+          <button
+            className="lightbox-close"
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+          <figure
+            className="lightbox-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img src={lightbox.image} alt={`${lightbox.name} — ${lightbox.type}`} />
+            <figcaption>
+              {lightbox.name} — {lightbox.type}
+            </figcaption>
+          </figure>
+        </div>
+      )}
     </section>
   )
 }
