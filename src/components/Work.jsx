@@ -7,10 +7,11 @@ import './Work.css'
 const projects = [
   {
     id: 1,
-    name: '[PROJECT NAME]',
+    name: 'Nocturne',
     type: 'Concept — restaurant',
     note: 'Menu, bookings, and location for a neighbourhood restaurant.',
     tags: ['React', 'Booking form', 'Mobile-first'],
+    image: '/work/nocturne-concept.jpg',
   },
   {
     id: 2,
@@ -52,11 +53,19 @@ export default function Work() {
           {projects.map((p) => (
             <article key={p.id} className="work-card">
               <div className="work-thumb">
-                {/* TODO: replace with a real screenshot at
-                    /public/work/project-name.jpg */}
-                <div className="thumb-placeholder">
-                  <span>Screenshot</span>
-                </div>
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={`${p.name} — ${p.type}`}
+                    loading="lazy"
+                  />
+                ) : (
+                  // TODO: replace with a real screenshot at
+                  // /public/work/project-name.jpg
+                  <div className="thumb-placeholder">
+                    <span>Screenshot</span>
+                  </div>
+                )}
               </div>
 
               <div className="work-meta">
