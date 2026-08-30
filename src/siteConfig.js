@@ -31,7 +31,7 @@ export const site = {
   whatsappDisplay: '[FOR INSERT]',  // human-readable, e.g. '+351 912 345 678'
 
   // Set to false to hide the WhatsApp buttons entirely until you decide
-  showWhatsapp: true,
+  showWhatsapp: false,
 
   // --- Location -------------------------------------------------
   // Kept for your own reference (invoices, future legal footer) but
