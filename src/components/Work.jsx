@@ -16,10 +16,11 @@ const projects = [
   },
   {
     id: 2,
-    name: '[PROJECT NAME]',
+    name: 'Trueline',
     type: 'Concept — trades',
     note: 'Service pages and quote requests for a local contractor.',
     tags: ['Static', 'SEO', 'Quote form'],
+    image: '/work/trueline-concept.jpg',
   },
   {
     id: 3,
