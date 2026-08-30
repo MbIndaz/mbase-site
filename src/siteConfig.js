@@ -50,7 +50,7 @@ export const packages = [
     badge: 'Starter',
     name: 'Essential',
     subtitle: 'A clean, professional online presence',
-    price: '[FOR INSERT]',
+    price: '€650',
     features: [
       'Up to 5 pages',
       'Mobile-responsive design',
@@ -66,7 +66,7 @@ export const packages = [
     badge: 'Most popular',
     name: 'Standard',
     subtitle: 'Semi-custom site built to grow with you',
-    price: '[FOR INSERT]',
+    price: '€1,600',
     features: [
       'Up to 10 pages',
       'Semi-custom design, branded to you',
@@ -82,7 +82,7 @@ export const packages = [
     badge: 'Custom build',
     name: 'Premium',
     subtitle: 'Fully custom platform, built to scale',
-    price: '[FOR INSERT]',
+    price: '€3,200',
     features: [
       'Custom page structure',
       'Fully custom design',
@@ -120,7 +120,7 @@ export const carePlans = [
     badge: 'Basic',
     name: 'Basic Care',
     subtitle: 'Keeps a live site safe and working',
-    price: '[FOR INSERT]',
+    price: '€90',
     cadence: '/month',
     features: [
       'Up to 2 hours of bug fixes',
@@ -136,7 +136,7 @@ export const carePlans = [
     badge: 'Most popular',
     name: 'Standard Care',
     subtitle: 'For sites that change often',
-    price: '[FOR INSERT]',
+    price: '€225',
     cadence: '/month',
     features: [
       'Up to 5 hours of bug fixes',
@@ -153,7 +153,7 @@ export const carePlans = [
     badge: 'Priority',
     name: 'Priority Care',
     subtitle: 'For sites where downtime costs money',
-    price: '[FOR INSERT]',
+    price: '€400',
     cadence: '/month',
     features: [
       'Up to 10 hours of bug fixes',
