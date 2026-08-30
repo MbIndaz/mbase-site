@@ -24,25 +24,25 @@ const projects = [
   },
   {
     id: 3,
-    name: '[PROJECT NAME]',
+    name: 'Kinetic',
     type: 'Concept — clinic',
     note: 'Appointment enquiries and treatment info for a small practice.',
     tags: ['Accessible', 'Multi-page', 'Fast'],
+    image: '/work/kinetic-concept.jpg',
   },
   {
     id: 4,
-    name: '[PROJECT NAME]',
+    name: 'Nocturne Club',
     type: 'Concept — app',
-    note: 'A booking and loyalty app concept for repeat customers.',
+    note: 'A booking and loyalty app built as a companion to the Nocturne site.',
     tags: ['React Native', 'Push alerts', 'Offline-ready'],
+    image: '/work/nocturne-club-app.jpg',
   },
 ]
 
 export default function Work() {
   const [lightbox, setLightbox] = useState(null)
 
-  // Escape key closes it; also lock page scroll while open so the
-  // background doesn't scroll behind the overlay.
   useEffect(() => {
     if (!lightbox) return
 
@@ -98,8 +98,6 @@ export default function Work() {
                     </span>
                   </>
                 ) : (
-                  // TODO: replace with a real screenshot at
-                  // /public/work/project-name.jpg
                   <div className="thumb-placeholder">
                     <span>Screenshot</span>
                   </div>
