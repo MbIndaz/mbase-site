@@ -228,36 +228,6 @@
   background: var(--signal);
 }
 
-.work-cta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 26px;
-}
-
-.work-link {
-  padding: 11px 22px;
-  font-size: 14.5px;
-}
-
-.work-demo {
-  font-size: 12.5px;
-  color: var(--ink-soft);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* Desktop: full-row horizontal card so 5 items don't leave an orphan */
 .work-card.is-wide {
   grid-column: 1 / -1;

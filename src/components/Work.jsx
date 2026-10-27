@@ -49,7 +49,6 @@ const projects = [
     image: '/work/financas-app.jpg',
     optionalImage: true,
     live: true,
-    url: 'https://mbmfinancas.duckdns.org/',
   },
 ]
 
@@ -119,7 +118,7 @@ export default function Work() {
               {p.live && (
                 <span className="work-live">
                   <i aria-hidden="true" />
-                  Live
+                  Live · invite-only
                 </span>
               )}
               <div
@@ -176,21 +175,6 @@ export default function Work() {
                     <li key={t}>{t}</li>
                   ))}
                 </ul>
-
-                {p.url && (
-                  <div className="work-cta">
-                    <a
-                      href={p.url}
-                      className="btn btn-primary work-link"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Open live app <span aria-hidden="true">↗</span>
-                      <span className="sr-only"> (opens in a new tab)</span>
-                    </a>
-                    <small className="work-demo">Invite-only demo</small>
-                  </div>
-                )}
               </div>
             </article>
             )
