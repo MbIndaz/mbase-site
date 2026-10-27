@@ -20,10 +20,65 @@
 
 .work-thumb {
   aspect-ratio: 4 / 3;
-  background: var(--azulejo-light);
-  border-bottom: 1px solid var(--line);
-  overflow: hidden;
   position: relative;
+  /* Visible so the glow behind the frame can spill softly into the card;
+     the card itself (overflow: hidden) still clips it. */
+  overflow: visible;
+}
+
+/* The screenshot sits inset inside the card, like a projected panel */
+.thumb-frame {
+  position: absolute;
+  inset: 11px;
+  z-index: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--azulejo-light);
+}
+
+/* Hairline inner border */
+.thumb-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  border: 1px solid rgba(140, 175, 255, 0.25);
+  pointer-events: none;
+}
+
+/* Bottom edge fades into the card instead of ending in a hard line */
+.thumb-frame::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  z-index: 3;
+  background: linear-gradient(to bottom, transparent, var(--thumb-fade, var(--paper-pure)));
+  pointer-events: none;
+}
+
+/* Ambient glow: the same image, blurred, behind the frame */
+.work-thumb .thumb-glow {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  width: calc(100% - 22px);
+  height: calc(100% - 22px);
+  z-index: 0;
+  border-radius: 10px;
+  filter: blur(28px);
+  scale: 1.15;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Text paints above the glow that spills out of the thumb */
+.work-meta {
+  position: relative;
+  z-index: 1;
 }
 
 .work-thumb img {
@@ -50,8 +105,9 @@
 /* Small "View" hint that appears on hover, bottom-right of the thumb */
 .thumb-zoom-hint {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  z-index: 5;
+  bottom: 22px;
+  right: 22px;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -144,9 +200,110 @@
   color: var(--ink-soft);
 }
 
+/* ─── Live project (5th card) ───────────────────────────── */
+
+.work-live {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 10px;
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.work-live i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+.work-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+.work-link {
+  padding: 11px 22px;
+  font-size: 14.5px;
+}
+
+.work-demo {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Desktop: full-row horizontal card so 5 items don't leave an orphan */
+.work-card.is-wide {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+}
+
+.work-card.is-wide .work-thumb {
+  aspect-ratio: auto;
+  min-height: 340px;
+}
+
+.work-card.is-wide .work-meta {
+  padding: 44px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.work-card.is-wide .work-name {
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.work-card.is-wide .work-note {
+  font-size: 16px;
+  max-width: 46ch;
+}
+
 @media (max-width: 980px) {
   .work-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Tablet/mobile: still spans the row, but stacks like the others */
+  .work-card.is-wide {
+    display: block;
+  }
+
+  .work-card.is-wide .work-thumb {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
+
+  .work-card.is-wide .work-meta {
+    display: block;
+    padding: 24px 24px 26px;
   }
 }
 
