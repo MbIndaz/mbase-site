@@ -134,6 +134,8 @@ function setupReveal() {
         el.classList.remove('fx-tilt', 'is-tilting')
         el.style.removeProperty('--rx')
         el.style.removeProperty('--ry')
+        el.style.removeProperty('--px')
+        el.style.removeProperty('--py')
       })
     })
   }
@@ -374,11 +376,11 @@ function setupCanvas(canvas) {
   }
 }
 
-/* ─── Cursor spotlight + card tilt (one rAF-throttled handler) ── */
+/* ─── Card tilt + sheen + screenshot parallax (one rAF-throttled handler) ── */
 
 const TILT_MAX = { 'work-card': 7, pkg: 9, 'care-card': 8 }
 
-function setupPointer(spot) {
+function setupPointer() {
   if (!hasFinePointer() || prefersReduced()) return
 
   let raf = 0
@@ -389,14 +391,14 @@ function setupPointer(spot) {
     el.classList.remove('is-tilting')
     el.style.setProperty('--rx', '0deg')
     el.style.setProperty('--ry', '0deg')
+    el.style.setProperty('--px', '0')
+    el.style.setProperty('--py', '0')
   }
 
   const frame = () => {
     raf = 0
     if (!ev) return
     const { clientX: x, clientY: y, target } = ev
-
-    if (spot) spot.style.transform = `translate3d(${x}px, ${y}px, 0)`
 
     const card = target instanceof Element ? target.closest('.fx-tilt') : null
     if (current && current !== card) reset(current)
@@ -410,6 +412,9 @@ function setupPointer(spot) {
       card.style.setProperty('--rx', `${(-(py - 0.5) * 2 * max).toFixed(2)}deg`)
       card.style.setProperty('--mx', `${(px * 100).toFixed(1)}%`)
       card.style.setProperty('--my', `${(py * 100).toFixed(1)}%`)
+      // -1..1, used by the work screenshots' parallax inside the frame
+      card.style.setProperty('--px', ((px - 0.5) * 2).toFixed(3))
+      card.style.setProperty('--py', ((py - 0.5) * 2).toFixed(3))
       card.classList.add('is-tilting')
     }
     current = card
@@ -420,7 +425,6 @@ function setupPointer(spot) {
     pointer.x = e.clientX
     pointer.y = e.clientY
     ev = e
-    if (spot) spot.classList.add('is-on')
     if (!raf) raf = requestAnimationFrame(frame)
   }
 
@@ -429,7 +433,6 @@ function setupPointer(spot) {
     ev = null
     if (current) reset(current)
     current = null
-    if (spot) spot.classList.remove('is-on')
   }
 
   const root = document.documentElement
@@ -493,14 +496,13 @@ function setupRail(setActive) {
 
 export default function FX() {
   const canvasRef = useRef(null)
-  const spotRef = useRef(null)
   const barRef = useRef(null)
   const [active, setActive] = useState('top')
 
   // Layout effect: tag + hide before first paint so nothing flashes
   useLayoutEffect(() => setupReveal(), [])
   useEffect(() => setupCanvas(canvasRef.current), [])
-  useEffect(() => setupPointer(spotRef.current), [])
+  useEffect(() => setupPointer(), [])
   useEffect(() => setupProgress(barRef.current), [])
   useEffect(() => setupRail(setActive), [])
 
@@ -511,7 +513,6 @@ export default function FX() {
         <div className="fx-blob b2" />
         <div className="fx-blob b3" />
         <canvas ref={canvasRef} className="fx-canvas" />
-        <div ref={spotRef} className="fx-spot" />
       </div>
 
       <div className="fx-progress" aria-hidden="true">

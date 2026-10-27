@@ -20,10 +20,65 @@
 
 .work-thumb {
   aspect-ratio: 4 / 3;
-  background: var(--azulejo-light);
-  border-bottom: 1px solid var(--line);
-  overflow: hidden;
   position: relative;
+  /* Visible so the glow behind the frame can spill softly into the card;
+     the card itself (overflow: hidden) still clips it. */
+  overflow: visible;
+}
+
+/* The screenshot sits inset inside the card, like a projected panel */
+.thumb-frame {
+  position: absolute;
+  inset: 11px;
+  z-index: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--azulejo-light);
+}
+
+/* Hairline inner border */
+.thumb-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  border: 1px solid rgba(140, 175, 255, 0.25);
+  pointer-events: none;
+}
+
+/* Bottom edge fades into the card instead of ending in a hard line */
+.thumb-frame::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34%;
+  z-index: 3;
+  background: linear-gradient(to bottom, transparent, var(--thumb-fade, var(--paper-pure)));
+  pointer-events: none;
+}
+
+/* Ambient glow: the same image, blurred, behind the frame */
+.work-thumb .thumb-glow {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  width: calc(100% - 22px);
+  height: calc(100% - 22px);
+  z-index: 0;
+  border-radius: 10px;
+  filter: blur(28px);
+  scale: 1.15;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Text paints above the glow that spills out of the thumb */
+.work-meta {
+  position: relative;
+  z-index: 1;
 }
 
 .work-thumb img {
@@ -50,8 +105,9 @@
 /* Small "View" hint that appears on hover, bottom-right of the thumb */
 .thumb-zoom-hint {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
+  z-index: 5;
+  bottom: 22px;
+  right: 22px;
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
@@ -148,8 +204,8 @@
 
 .work-live {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 22px;
+  left: 22px;
   z-index: 4;
   display: inline-flex;
   align-items: center;
@@ -212,8 +268,6 @@
 .work-card.is-wide .work-thumb {
   aspect-ratio: auto;
   min-height: 340px;
-  border-bottom: none;
-  border-right: 1px solid var(--line);
 }
 
 .work-card.is-wide .work-meta {
@@ -245,8 +299,6 @@
   .work-card.is-wide .work-thumb {
     aspect-ratio: 16 / 9;
     min-height: 0;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
   }
 
   .work-card.is-wide .work-meta {

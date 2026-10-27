@@ -5,6 +5,12 @@
    and the site returns to the original light design.
    ═══════════════════════════════════════════════════════════ */
 
+@property --reveal {
+  syntax: '<percentage>';
+  initial-value: 0%;
+  inherits: false;
+}
+
 @property --ang {
   syntax: '<angle>';
   initial-value: 0deg;
@@ -36,6 +42,7 @@
   /* What the old CSS meant by "var(--ink) as a dark surface" */
   --surface-dark: rgba(7, 12, 26, 0.8);
   --on-accent: #04101f;
+  --thumb-fade: rgba(11, 17, 34, 0.94); /* card colour the screenshots fade into */
 
   --glass: linear-gradient(150deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.022));
   --glass-border: rgba(160, 190, 255, 0.18);
@@ -188,7 +195,7 @@ a.cm-value:hover {
   border-color: rgba(160, 200, 255, 0.34);
 }
 
-.work-thumb {
+.thumb-frame {
   background: rgba(110, 162, 255, 0.07);
 }
 
@@ -497,24 +504,6 @@ a.cm-value:hover {
   height: 100%;
 }
 
-/* Cursor spotlight: a fixed-size disc moved with transform (compositor only) */
-.fx-spot {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 640px;
-  height: 640px;
-  margin: -320px 0 0 -320px;
-  background: radial-gradient(closest-side, rgba(94, 231, 255, 0.11), rgba(167, 139, 250, 0.05) 50%, transparent);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  will-change: transform;
-}
-
-.fx-spot.is-on {
-  opacity: 1;
-}
-
 .fx-progress {
   position: fixed;
   top: 0;
@@ -663,44 +652,137 @@ a.cm-value:hover {
   filter: none;
 }
 
-/* Work thumbnails: wipe in like a scan */
-.fx-scan img,
-.fx-scan .thumb-placeholder {
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 1.1s var(--ease) var(--d, 0s);
-}
-
-.fx-scan.is-in img,
-.fx-scan.is-in .thumb-placeholder {
-  clip-path: inset(0);
-}
-
-.fx-scan::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(to bottom, transparent 78%, rgba(94, 231, 255, 0.28) 97%, #c9f8ff 100%);
-  translate: 0 -101%;
+/* Work thumbnails: "materialize" — the projection resolves from blurred,
+   over-bright and desaturated, while a scan line sweeps down and a mask
+   (driven by --reveal) shows only what the line has already passed.
+   All of it is CSS-only and leaves no filter or mask behind afterwards. */
+.fx-scan:not(.is-in) .thumb-frame,
+.fx-scan:not(.is-in) .thumb-glow {
   opacity: 0;
 }
 
+.fx-scan.is-in .thumb-frame {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--reveal) - 5%), transparent var(--reveal));
+  mask-image: linear-gradient(to bottom, #000 calc(var(--reveal) - 5%), transparent var(--reveal));
+  /* thumbReveal moves --reveal 0 → 100%; maskOff holds the base mask, then
+     snaps it to none at the very end (steps) and keeps it off. */
+  animation: thumbReveal 1s cubic-bezier(0.4, 0, 0.6, 1) var(--d, 0s) both,
+    maskOff 1s steps(1, end) var(--d, 0s) forwards;
+}
+
+.fx-scan.is-in .thumb-img,
+.fx-scan.is-in .thumb-placeholder {
+  /* backwards fill only, so the final state is the element's own styles:
+     no leftover filter, and hover zoom / parallax keep working */
+  animation: materialize 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) backwards;
+}
+
+.fx-scan.is-in .thumb-glow {
+  animation: glowIn 1.2s ease-out var(--d, 0s) backwards;
+}
+
+@keyframes thumbReveal {
+  from {
+    --reveal: 0%;
+  }
+  to {
+    --reveal: 105%;
+  }
+}
+
+@keyframes maskOff {
+  to {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+@keyframes materialize {
+  from {
+    filter: blur(14px) brightness(1.5) saturate(0.4);
+    transform: scale(1.06);
+  }
+  to {
+    filter: none;
+    transform: none;
+  }
+}
+
+@keyframes glowIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The scan line, sitting inside the inset frame area */
+.fx-scan::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  right: 11px;
+  bottom: 11px;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, var(--cyan), var(--violet)) 0 18px / 100% 2px no-repeat,
+    linear-gradient(to bottom, transparent, rgba(110, 190, 255, 0.28)) 0 0 / 100% 18px no-repeat,
+    linear-gradient(to bottom, rgba(150, 140, 255, 0.18), transparent) 0 20px / 100% 10px no-repeat;
+  translate: 0 -18px;
+}
+
 .fx-scan.is-in::after {
-  animation: scanSweep 1.1s var(--ease) var(--d, 0s) both;
+  animation: scanSweep 1s cubic-bezier(0.4, 0, 0.6, 1) var(--d, 0s) both;
 }
 
 @keyframes scanSweep {
   0% {
-    translate: 0 -100%;
+    translate: 0 -18px;
     opacity: 1;
   }
-  85% {
+  88% {
     opacity: 1;
   }
   100% {
-    translate: 0 0;
+    translate: 0 calc(100% - 18px);
     opacity: 0;
+  }
+}
+
+/* Placeholder: same frame, plus a slow shimmer so it reads as "loading" */
+.thumb-placeholder {
+  position: relative;
+  overflow: hidden;
+}
+
+.thumb-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(140, 200, 255, 0.12) 45%, rgba(190, 160, 255, 0.14) 55%, transparent 70%);
+  translate: -100% 0;
+  animation: thumbShimmer 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes thumbShimmer {
+  to {
+    translate: 100% 0;
+  }
+}
+
+/* Parallax inside the frame (fine pointer only): --px / --py come from the
+   tilt handler in FX.jsx, range -1..1. Slight overscale hides the edges. */
+@media (hover: hover) and (pointer: fine) {
+  .work-thumb .thumb-img {
+    scale: 1.04;
+    translate: calc(var(--px, 0) * -6px) calc(var(--py, 0) * -6px);
+    transition: transform 0.35s ease, translate 0.3s ease-out;
+  }
+
+  .work-thumb .thumb-glow {
+    translate: calc(var(--px, 0) * -10px) calc(var(--py, 0) * -10px);
+    transition: transform 0.35s ease, translate 0.4s ease-out;
   }
 }
 
@@ -1133,7 +1215,13 @@ a.cm-value:hover {
     display: none;
   }
 
-  .fx-spot {
+  .thumb-placeholder::after {
+    animation: none !important;
     display: none;
+  }
+
+  .work-thumb .thumb-img,
+  .work-thumb .thumb-glow {
+    translate: none !important;
   }
 }

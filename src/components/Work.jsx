@@ -137,18 +137,32 @@ export default function Work() {
               >
                 {hasImage ? (
                   <>
+                    {/* Same src as the real image, so no extra request —
+                        blurred behind the frame to light up the card. */}
                     <img
+                      className="thumb-glow"
                       src={p.image}
-                      alt={`${p.name} — ${p.type}`}
+                      alt=""
+                      aria-hidden="true"
                       loading="lazy"
                     />
+                    <div className="thumb-frame">
+                      <img
+                        className="thumb-img"
+                        src={p.image}
+                        alt={`${p.name} — ${p.type}`}
+                        loading="lazy"
+                      />
+                    </div>
                     <span className="thumb-zoom-hint" aria-hidden="true">
                       View
                     </span>
                   </>
                 ) : (
-                  <div className="thumb-placeholder">
-                    <span>Screenshot</span>
+                  <div className="thumb-frame is-empty">
+                    <div className="thumb-placeholder">
+                      <span>Screenshot</span>
+                    </div>
                   </div>
                 )}
               </div>
