@@ -656,12 +656,14 @@ a.cm-value:hover {
    over-bright and desaturated, while a scan line sweeps down and a mask
    (driven by --reveal) shows only what the line has already passed.
    All of it is CSS-only and leaves no filter or mask behind afterwards. */
-.fx-scan:not(.is-in) .thumb-frame,
-.fx-scan:not(.is-in) .thumb-glow {
+/* Plays only once the thumb is both in view (data-fx-in, from FX.jsx) and its
+   image is ready (data-ready, from Work.jsx); hidden until then. */
+[data-fx-scan]:not([data-fx-in][data-ready]) .thumb-frame,
+[data-fx-scan]:not([data-fx-in][data-ready]) .thumb-glow {
   opacity: 0;
 }
 
-.fx-scan.is-in .thumb-frame {
+[data-fx-scan][data-fx-in][data-ready] .thumb-frame {
   -webkit-mask-image: linear-gradient(to bottom, #000 calc(var(--reveal) - 5%), transparent var(--reveal));
   mask-image: linear-gradient(to bottom, #000 calc(var(--reveal) - 5%), transparent var(--reveal));
   /* thumbReveal moves --reveal 0 → 100%; maskOff holds the base mask, then
@@ -670,14 +672,14 @@ a.cm-value:hover {
     maskOff 1s steps(1, end) var(--d, 0s) forwards;
 }
 
-.fx-scan.is-in .thumb-img,
-.fx-scan.is-in .thumb-placeholder {
+[data-fx-scan][data-fx-in][data-ready] .thumb-img,
+[data-fx-scan][data-fx-in][data-ready] .thumb-placeholder {
   /* backwards fill only, so the final state is the element's own styles:
      no leftover filter, and hover zoom / parallax keep working */
   animation: materialize 1.2s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) backwards;
 }
 
-.fx-scan.is-in .thumb-glow {
+[data-fx-scan][data-fx-in][data-ready] .thumb-glow {
   animation: glowIn 1.2s ease-out var(--d, 0s) backwards;
 }
 
@@ -715,7 +717,7 @@ a.cm-value:hover {
 }
 
 /* The scan line, sitting inside the inset frame area */
-.fx-scan::after {
+[data-fx-scan]::after {
   content: '';
   position: absolute;
   top: 11px;
@@ -731,7 +733,7 @@ a.cm-value:hover {
   translate: 0 -18px;
 }
 
-.fx-scan.is-in::after {
+[data-fx-scan][data-fx-in][data-ready]::after {
   animation: scanSweep 1s cubic-bezier(0.4, 0, 0.6, 1) var(--d, 0s) both;
 }
 
@@ -1152,10 +1154,6 @@ a.cm-value:hover {
   50% {
     opacity: 0.35;
   }
-}
-
-.work-demo {
-  color: var(--ink-soft);
 }
 
 /* ─── 12. Layering + mobile ──────────────────────────────── */

@@ -64,6 +64,21 @@ function setupReveal() {
     })
   }
 
+  // Work thumbnails keep their reveal state in data attributes, never in
+  // className: React rewrites a thumb's className (e.g. when its image loads),
+  // which would wipe a class added here. React never touches attributes it
+  // didn't render. The animation itself also waits for React's data-ready.
+  const markScan = (el, d) => {
+    el.dataset.fxScan = ''
+    el.style.setProperty('--d', `${Math.min(d, 0.9).toFixed(2)}s`)
+    watched.push(el)
+    undo.push(() => {
+      delete el.dataset.fxScan
+      delete el.dataset.fxIn
+      el.style.removeProperty('--d')
+    })
+  }
+
   const stagger = (els, base = 0, step = 0.09, opts) =>
     els.forEach((el, i) => tag(el, { ...opts, d: base + i * step }))
 
@@ -112,7 +127,7 @@ function setupReveal() {
   stagger(works, 0.05, 0.09)
   works.forEach((card, i) => {
     const thumb = card.querySelector('.work-thumb')
-    if (thumb) mark(thumb, 'fx-scan', 0.3 + Math.min(i * 0.09, 0.7))
+    if (thumb) markScan(thumb, 0.3 + Math.min(i * 0.09, 0.7))
   })
 
   const steps = all('.steps')
@@ -146,7 +161,8 @@ function setupReveal() {
         // Also reveal anything already scrolled past (reload mid-page, deep link)
         const passed = !e.isIntersecting && e.boundingClientRect.top < 0
         if (e.isIntersecting || passed) {
-          e.target.classList.add('is-in')
+          if ('fxScan' in e.target.dataset) e.target.dataset.fxIn = ''
+          else e.target.classList.add('is-in')
           io.unobserve(e.target)
         }
       }

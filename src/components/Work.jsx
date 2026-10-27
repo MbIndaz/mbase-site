@@ -52,10 +52,11 @@ const projects = [
   },
 ]
 
-// For projects flagged optionalImage: only show the screenshot once it has
-// actually loaded, so a missing file never flashes a broken-image icon.
-function useLoadedImages(list) {
-  const [loaded, setLoaded] = useState(() => new Set())
+// For projects flagged optionalImage: probe the file first, so a missing
+// screenshot never flashes a broken-image icon. Result per id: 'ok' | 'missing'
+// (no entry yet = still checking).
+function useOptionalImages(list) {
+  const [probed, setProbed] = useState({})
 
   useEffect(() => {
     let cancelled = false
@@ -63,9 +64,11 @@ function useLoadedImages(list) {
       .filter((p) => p.optionalImage && p.image)
       .forEach((p) => {
         const probe = new Image()
-        probe.onload = () => {
-          if (!cancelled) setLoaded((prev) => new Set(prev).add(p.id))
+        const settle = (result) => {
+          if (!cancelled) setProbed((prev) => ({ ...prev, [p.id]: result }))
         }
+        probe.onload = () => settle('ok')
+        probe.onerror = () => settle('missing')
         probe.src = p.image
       })
     return () => {
@@ -73,12 +76,17 @@ function useLoadedImages(list) {
     }
   }, [list])
 
-  return loaded
+  return probed
 }
 
 export default function Work() {
   const [lightbox, setLightbox] = useState(null)
-  const loadedImages = useLoadedImages(projects)
+  const probed = useOptionalImages(projects)
+  // Ids whose thumbnail <img> has finished loading (or failed). The reveal
+  // animation in holo.css waits for this, so it plays once, on a ready image.
+  const [settled, setSettled] = useState(() => new Set())
+  const settle = (id) =>
+    setSettled((prev) => (prev.has(id) ? prev : new Set(prev).add(id)))
 
   useEffect(() => {
     if (!lightbox) return
@@ -109,7 +117,13 @@ export default function Work() {
 
         <div className="work-grid">
           {projects.map((p) => {
-            const hasImage = p.image && (!p.optionalImage || loadedImages.has(p.id))
+            const hasImage =
+              p.image && (!p.optionalImage || probed[p.id] === 'ok')
+            // Ready = the image is loaded, or we're showing the placeholder
+            // because the optional screenshot turned out to be missing.
+            const ready = hasImage
+              ? settled.has(p.id)
+              : !(p.optionalImage && !probed[p.id])
             return (
             <article
               key={p.id}
@@ -133,6 +147,7 @@ export default function Work() {
                   }
                 }}
                 aria-label={hasImage ? `View ${p.name} full size` : undefined}
+                data-ready={ready ? '' : undefined}
               >
                 {hasImage ? (
                   <>
@@ -151,6 +166,8 @@ export default function Work() {
                         src={p.image}
                         alt={`${p.name} — ${p.type}`}
                         loading="lazy"
+                        onLoad={() => settle(p.id)}
+                        onError={() => settle(p.id)}
                       />
                     </div>
                     <span className="thumb-zoom-hint" aria-hidden="true">
