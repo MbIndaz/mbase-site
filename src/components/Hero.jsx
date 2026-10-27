@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { deployLines } from '../siteConfig'
 import './Hero.css'
 
@@ -48,9 +48,64 @@ function DeployTerminal() {
   )
 }
 
+/* Gentle mouse parallax. Writes --nx / --ny (-1..1, smoothed) on the
+   .hero element only; the CSS decides how far each layer moves. */
+function useHeroParallax(ref) {
+  useEffect(() => {
+    const hero = ref.current
+    if (!hero) return
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!fine || reduced) return
+
+    let tx = 0
+    let ty = 0
+    let cx = 0
+    let cy = 0
+    let raf = 0
+    let visible = true
+
+    const tick = () => {
+      cx += (tx - cx) * 0.08
+      cy += (ty - cy) * 0.08
+      hero.style.setProperty('--nx', cx.toFixed(3))
+      hero.style.setProperty('--ny', cy.toFixed(3))
+      const settled = Math.abs(tx - cx) < 0.002 && Math.abs(ty - cy) < 0.002
+      raf = settled ? 0 : requestAnimationFrame(tick)
+    }
+    const onMove = (e) => {
+      if (!visible) return
+      tx = (e.clientX / window.innerWidth) * 2 - 1
+      ty = (e.clientY / window.innerHeight) * 2 - 1
+      if (!raf) raf = requestAnimationFrame(tick)
+    }
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+    })
+    io.observe(hero)
+    window.addEventListener('pointermove', onMove, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(raf)
+      io.disconnect()
+      window.removeEventListener('pointermove', onMove)
+    }
+  }, [ref])
+}
+
 export default function Hero() {
+  const heroRef = useRef(null)
+  useHeroParallax(heroRef)
+
   return (
-    <section className="hero" id="top">
+    <section className="hero" id="top" ref={heroRef}>
+      <div className="hero-floor" aria-hidden="true">
+        <div className="floor-plane">
+          <div className="floor-grid" />
+        </div>
+      </div>
+
       <div className="wrap hero-inner">
         <div className="hero-copy">
           <span className="eyebrow">Web &amp; app studio</span>
@@ -91,7 +146,17 @@ export default function Hero() {
         </div>
 
         <div className="hero-visual">
+          <div className="orbits" aria-hidden="true">
+            <div className="orbit o3"><div className="orbit-spin" /></div>
+            <div className="orbit o1"><div className="orbit-spin" /></div>
+            <div className="orbit o2"><div className="orbit-spin" /></div>
+          </div>
+
           <DeployTerminal />
+
+          <div className="hud-chip c1" aria-hidden="true"><span>SSL active</span></div>
+          <div className="hud-chip c2" aria-hidden="true"><span>Mobile-ready</span></div>
+          <div className="hud-chip c3" aria-hidden="true"><span>Deployed</span></div>
         </div>
       </div>
     </section>

@@ -38,10 +38,48 @@ const projects = [
     tags: ['React Native', 'Push alerts', 'Offline-ready'],
     image: '/work/nocturne-club-app.jpg',
   },
+  {
+    // A real, running project — not a concept. The screenshot is optional:
+    // until /public/work/financas-app.jpg exists, the card shows the placeholder.
+    id: 5,
+    name: 'Finanças',
+    type: 'Live app: personal finance',
+    note: 'A personal finance app to track income, bills and savings goals, with a spendable balance, monthly history and category charts.',
+    tags: ['React', 'Auth', 'Charts', 'Self-hosted'],
+    image: '/work/financas-app.jpg',
+    optionalImage: true,
+    live: true,
+    url: 'https://mbmfinancas.duckdns.org/',
+  },
 ]
+
+// For projects flagged optionalImage: only show the screenshot once it has
+// actually loaded, so a missing file never flashes a broken-image icon.
+function useLoadedImages(list) {
+  const [loaded, setLoaded] = useState(() => new Set())
+
+  useEffect(() => {
+    let cancelled = false
+    list
+      .filter((p) => p.optionalImage && p.image)
+      .forEach((p) => {
+        const probe = new Image()
+        probe.onload = () => {
+          if (!cancelled) setLoaded((prev) => new Set(prev).add(p.id))
+        }
+        probe.src = p.image
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [list])
+
+  return loaded
+}
 
 export default function Work() {
   const [lightbox, setLightbox] = useState(null)
+  const loadedImages = useLoadedImages(projects)
 
   useEffect(() => {
     if (!lightbox) return
@@ -71,22 +109,33 @@ export default function Work() {
         </p>
 
         <div className="work-grid">
-          {projects.map((p) => (
-            <article key={p.id} className="work-card">
+          {projects.map((p) => {
+            const hasImage = p.image && (!p.optionalImage || loadedImages.has(p.id))
+            return (
+            <article
+              key={p.id}
+              className={`work-card${p.live ? ' is-live is-wide' : ''}`}
+            >
+              {p.live && (
+                <span className="work-live">
+                  <i aria-hidden="true" />
+                  Live
+                </span>
+              )}
               <div
-                className={`work-thumb ${p.image ? 'is-zoomable' : ''}`}
-                onClick={() => p.image && setLightbox(p)}
-                role={p.image ? 'button' : undefined}
-                tabIndex={p.image ? 0 : undefined}
+                className={`work-thumb ${hasImage ? 'is-zoomable' : ''}`}
+                onClick={() => hasImage && setLightbox(p)}
+                role={hasImage ? 'button' : undefined}
+                tabIndex={hasImage ? 0 : undefined}
                 onKeyDown={(e) => {
-                  if (p.image && (e.key === 'Enter' || e.key === ' ')) {
+                  if (hasImage && (e.key === 'Enter' || e.key === ' ')) {
                     e.preventDefault()
                     setLightbox(p)
                   }
                 }}
-                aria-label={p.image ? `View ${p.name} full size` : undefined}
+                aria-label={hasImage ? `View ${p.name} full size` : undefined}
               >
-                {p.image ? (
+                {hasImage ? (
                   <>
                     <img
                       src={p.image}
@@ -113,9 +162,25 @@ export default function Work() {
                     <li key={t}>{t}</li>
                   ))}
                 </ul>
+
+                {p.url && (
+                  <div className="work-cta">
+                    <a
+                      href={p.url}
+                      className="btn btn-primary work-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Open live app <span aria-hidden="true">↗</span>
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                    <small className="work-demo">Invite-only demo</small>
+                  </div>
+                )}
               </div>
             </article>
-          ))}
+            )
+          })}
         </div>
       </div>
 
