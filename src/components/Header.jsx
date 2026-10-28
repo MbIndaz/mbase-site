@@ -13,8 +13,8 @@ export default function Header() {
   }, [])
 
   const links = [
-    { href: '#work', label: 'Work' },
     { href: '#process', label: 'Process' },
+    { href: '#work', label: 'Work' },
     { href: '#packages', label: 'Packages' },
     { href: '#care', label: 'Care plans' },
   ]

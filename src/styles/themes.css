@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════════════════════════
+   SEASONAL THEMES
+   Imported last (see main.jsx). A theme only overrides the colour
+   tokens defined in :root in holo.css — it never needs to touch a
+   component. Switch with `theme` in src/siteConfig.js.
+
+   Example (kept commented out; no seasonal theme is built yet):
+
+   [data-theme='halloween'] {
+     --accent-rgb: 230 126 34;   // space-separated, used as rgb(var(--accent-rgb) / .2)
+     --accent: #e67e22;
+     --accent-soft: #f0a35e;
+     --bg: #0f0a08;
+     --surface: rgb(255 255 255 / 0.04);
+     --border: rgb(255 255 255 / 0.09);
+     --text: #efe6df;
+     --text-soft: #b3a399;
+     --success: #3ecf8e;
+   }
+
+   Keep --on-accent readable on the new accent (about 4.5:1 or better).
+   ═══════════════════════════════════════════════════════════ */

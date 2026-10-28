@@ -13,6 +13,11 @@ export const site = {
   shortName: 'MB',
   tagline: 'Fixed-price websites and apps for growing businesses.',
 
+  // --- Theme ----------------------------------------------------
+  // Values: 'default', and later 'halloween' or 'christmas'. A theme only
+  // overrides colour tokens — see src/styles/themes.css.
+  theme: 'default',
+
   // --- Contact --------------------------------------------------
   // Using the new business Gmail for now — swap to hello@mbase.com
   // once the domain + Cloudflare Email Routing are set up.
