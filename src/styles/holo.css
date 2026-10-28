@@ -1,8 +1,10 @@
 /* ═══════════════════════════════════════════════════════════
-   HOLOGRAPHIC THEME
-   Loaded LAST (see main.jsx) so it re-skins the existing CSS
-   without rewriting it. Delete this file + <FX /> in App.jsx
-   and the site returns to the original light design.
+   DARK THEME + MOTION
+   Loaded near-last (see main.jsx) so it re-skins the existing CSS
+   without rewriting it.
+
+   Every colour in here comes from the tokens in :root below. A seasonal
+   theme (src/styles/themes.css) only overrides those tokens.
    ═══════════════════════════════════════════════════════════ */
 
 @property --reveal {
@@ -11,61 +13,70 @@
   inherits: false;
 }
 
-@property --ang {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
 /* ─── 1. Tokens ─────────────────────────────────────────── */
 
 :root {
   color-scheme: dark;
 
-  /* Re-pointed originals. --ink is now the TEXT colour, --paper the page. */
-  --ink: #e9eefb;
-  --ink-soft: rgba(206, 216, 240, 0.66);
-  --paper: #060a14;
-  --paper-pure: #0c1324;
-  --azulejo: #6ea2ff;
-  --azulejo-light: rgba(110, 162, 255, 0.09);
-  --signal: #19e6a1;
-  --line: rgba(150, 180, 255, 0.15);
+  /* Theme tokens — the only things a theme needs to override */
+  --accent-rgb: 91 141 239; /* space-separated, for rgb(var(--accent-rgb) / .2) */
+  --accent: #5b8def;
+  --accent-soft: #8fb0f5;
+  --bg: #0a0f1a;
+  --surface: rgb(255 255 255 / 0.04);
+  --border: rgb(255 255 255 / 0.09);
+  --text: #e6eaf2;
+  --text-soft: #9aa4b8;
+  --success: #3ecf8e; /* terminal success line + small status dots only */
 
-  /* Holographic accents */
-  --cyan: #5ee7ff;
-  --blue: #6ea2ff;
-  --violet: #a78bfa;
-  --magenta: #ff7ad9;
-  --holo: linear-gradient(100deg, var(--cyan), var(--blue) 34%, var(--violet) 68%, var(--magenta));
+  /* Accent shades (kept as --holo-N so existing rules stay readable) */
+  --holo-1: var(--accent);
+  --holo-2: var(--accent-soft);
+  --holo-3: rgb(var(--accent-rgb) / 0.7);
+  --holo-4: rgb(var(--accent-rgb) / 0.45);
+  --holo: linear-gradient(100deg, var(--accent), var(--accent-soft));
 
-  /* What the old CSS meant by "var(--ink) as a dark surface" */
-  --surface-dark: rgba(7, 12, 26, 0.8);
-  --on-accent: #04101f;
-  --thumb-fade: rgba(11, 17, 34, 0.94); /* card colour the screenshots fade into */
+  /* Text on a solid accent fill (4.5:1+ against #5b8def) */
+  --on-accent: #07101f;
 
-  --glass: linear-gradient(150deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.022));
-  --glass-border: rgba(160, 190, 255, 0.18);
+  /* Opaque dark fills: select options, step circles, autofill */
+  --surface-solid: #0f1524;
+  --surface-dark: rgb(10 15 26 / 0.82);
+  --thumb-fade: rgb(20 25 36 / 0.96); /* card colour the screenshots fade into */
+
+  --glass: linear-gradient(150deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.02));
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Names the original (light) stylesheet used, pointed at the tokens above.
+     --ink is the TEXT colour now and --paper the page. */
+  --ink: var(--text);
+  --ink-soft: var(--text-soft);
+  --paper: var(--bg);
+  --paper-pure: var(--surface-solid);
+  --azulejo: var(--accent);
+  --azulejo-light: rgb(var(--accent-rgb) / 0.08);
+  --signal: var(--success);
+  --line: var(--border);
 }
 
 html {
-  background: var(--paper);
+  background: var(--bg);
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden; /* reveal offsets must never create a sideways scrollbar */
 }
 
 ::selection {
-  background: rgba(94, 231, 255, 0.3);
+  background: rgb(var(--accent-rgb) / 0.35);
   color: #fff;
 }
 
-:focus-visible {
-  outline-color: var(--cyan);
+:focus-visible,
+.on-dark :focus-visible {
+  outline-color: var(--accent-soft);
 }
 
 /* Page content sits above the fixed FX layer by DOM order (FX renders first).
@@ -84,94 +95,96 @@ main,
 
 /* Header */
 .site-header.is-scrolled {
-  background: rgba(6, 10, 20, 0.72);
+  background: rgb(10 15 26 / 0.74);
   backdrop-filter: blur(14px) saturate(140%);
-  border-bottom-color: var(--line);
+  border-bottom-color: var(--border);
 }
 
 .logo-mark,
 .footer-brand .logo-mark {
-  background: linear-gradient(135deg, var(--cyan), var(--blue) 50%, var(--violet));
+  background: var(--accent);
   color: var(--on-accent);
   font-weight: 600;
-  box-shadow: 0 0 18px -2px rgba(94, 231, 255, 0.55);
 }
 
 .nav-cta:hover {
-  background: rgba(94, 231, 255, 0.1);
-  border-color: var(--cyan);
-  color: var(--ink) !important;
-  box-shadow: 0 0 22px -6px rgba(94, 231, 255, 0.6);
+  background: rgb(var(--accent-rgb) / 0.1);
+  border-color: rgb(var(--accent-rgb) / 0.6);
+  color: var(--text) !important;
 }
 
 /* Terminal */
 .terminal {
   background: var(--surface-dark);
   backdrop-filter: blur(10px);
-  box-shadow: 0 30px 80px -30px rgba(94, 231, 255, 0.32),
-    0 0 0 1px rgba(150, 180, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  box-shadow: 0 24px 60px -34px rgb(0 0 0 / 0.8), 0 0 0 1px var(--border),
+    inset 0 1px 0 rgb(255 255 255 / 0.05);
 }
 
 .terminal-bar {
-  background: rgba(255, 255, 255, 0.045);
+  background: rgb(255 255 255 / 0.04);
 }
 
 .t-dim {
-  color: rgba(214, 224, 250, 0.58);
+  color: var(--text-soft);
 }
 
 /* Process */
 .process {
-  background: linear-gradient(180deg, rgba(14, 22, 48, 0.5), rgba(8, 13, 30, 0.35));
-  color: var(--ink);
-  border-block: 1px solid var(--line);
+  background: linear-gradient(180deg, rgb(var(--accent-rgb) / 0.04), rgb(255 255 255 / 0.01));
+  color: var(--text);
+  border-block: 1px solid var(--border);
+}
+
+.process .eyebrow {
+  color: var(--accent);
 }
 
 .process .step-title {
-  color: var(--ink);
+  color: var(--text);
 }
 
 /* Footer */
 .site-footer {
-  background: rgba(4, 7, 16, 0.78);
-  color: var(--ink);
-  border-top: 1px solid var(--line);
+  background: rgb(6 9 16 / 0.8);
+  color: var(--text);
+  border-top: 1px solid var(--border);
 }
 
-.footer-tag {
-  color: rgba(206, 216, 240, 0.62);
+.footer-tag,
+.footer-base {
+  color: var(--text-soft);
 }
 
 .footer-nav a {
-  color: rgba(206, 216, 240, 0.72);
+  color: var(--text-soft);
 }
 
 .footer-nav a:hover {
-  color: var(--cyan);
+  color: var(--text);
 }
 
 .footer-base {
-  color: rgba(206, 216, 240, 0.56);
-  border-top-color: var(--line);
+  border-top-color: var(--border);
 }
 
 /* Care + Contact sections were solid light panels */
 .care {
-  background: rgba(255, 255, 255, 0.018);
-  border-color: var(--line);
+  background: rgb(255 255 255 / 0.018);
+  border-color: var(--border);
 }
 
 .contact {
   background: transparent;
-  border-top-color: var(--line);
+  border-top-color: var(--border);
 }
 
 .contact-methods li {
-  border-bottom-color: var(--line);
+  border-bottom-color: var(--border);
 }
 
 a.cm-value:hover {
-  color: var(--cyan);
+  color: var(--accent-soft);
 }
 
 /* ─── 3. Glass cards ─────────────────────────────────────── */
@@ -181,27 +194,25 @@ a.cm-value:hover {
 .care-card,
 .contact-form {
   background: var(--glass);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  box-shadow: 0 24px 50px -30px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  box-shadow: 0 18px 40px -30px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.04);
   position: relative;
 }
 
 .work-card:hover {
-  box-shadow: 0 26px 60px -26px rgba(94, 231, 255, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09);
-  border-color: rgba(160, 200, 255, 0.34);
+  box-shadow: 0 20px 44px -28px rgb(0 0 0 / 0.65), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  border-color: rgb(var(--accent-rgb) / 0.32);
 }
 
 .thumb-frame {
-  background: rgba(110, 162, 255, 0.07);
+  background: rgb(var(--accent-rgb) / 0.06);
 }
 
 .thumb-placeholder {
-  background-image: linear-gradient(45deg, rgba(110, 162, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(110, 162, 255, 0.1) 75%),
-    linear-gradient(45deg, rgba(110, 162, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(110, 162, 255, 0.1) 75%);
+  background-image: linear-gradient(45deg, rgb(var(--accent-rgb) / 0.08) 25%, transparent 25%, transparent 75%, rgb(var(--accent-rgb) / 0.08) 75%),
+    linear-gradient(45deg, rgb(var(--accent-rgb) / 0.08) 25%, transparent 25%, transparent 75%, rgb(var(--accent-rgb) / 0.08) 75%);
 }
 
 .thumb-placeholder span {
@@ -209,88 +220,86 @@ a.cm-value:hover {
 }
 
 .work-tags li {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgb(255 255 255 / 0.03);
 }
 
 .pkg-badge {
-  background: rgba(110, 162, 255, 0.14);
-  color: #9cc0ff;
+  background: rgb(var(--accent-rgb) / 0.14);
+  color: var(--accent-soft);
 }
 
-/* Featured package: slowly rotating iridescent border */
+/* Featured package + featured care plan: static accent border and a faint
+   highlight along the top edge. */
 .pkg.is-featured {
-  background: linear-gradient(160deg, rgba(110, 162, 255, 0.17), rgba(167, 139, 250, 0.09) 55%, rgba(8, 13, 30, 0.55));
-  border-color: transparent;
-  color: var(--ink);
-  box-shadow: 0 0 70px -24px rgba(110, 162, 255, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgb(var(--accent-rgb) / 0.12), rgb(var(--accent-rgb) / 0.03) 45%, rgb(255 255 255 / 0.015));
+  border-color: rgb(var(--accent-rgb) / 0.55);
+  color: var(--text);
+  box-shadow: 0 18px 40px -30px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.08);
 }
 
-.pkg.is-featured::before {
+.pkg.is-featured::before,
+.care-card.is-featured::before {
   content: '';
   position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(from var(--ang), var(--cyan), var(--blue), var(--violet), var(--magenta), var(--cyan));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  animation: angSpin 7s linear infinite;
+  top: -1px;
+  left: 14%;
+  right: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+  opacity: 0.55;
   pointer-events: none;
 }
 
-@keyframes angSpin {
-  to {
-    --ang: 360deg;
-  }
-}
-
 .pkg.is-featured .pkg-badge {
-  background: var(--signal);
-  color: #032016;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .pkg.is-featured .pkg-subtitle,
 .pkg.is-featured .pkg-from,
 .pkg.is-featured .pkg-bestfor {
-  color: rgba(222, 230, 250, 0.72);
+  color: var(--text-soft);
 }
 
 .pkg.is-featured .pkg-features li {
-  color: rgba(233, 238, 251, 0.92);
+  color: var(--text);
+}
+
+.pkg.is-featured .pkg-features li::before {
+  background: var(--accent);
 }
 
 .pkg.is-featured .pkg-bestfor span {
-  color: var(--ink);
+  color: var(--text);
 }
 
-.pkg-amount-custom {
-  color: var(--cyan);
+.pkg-amount-custom,
+.pkg.is-featured .pkg-amount-custom {
+  color: var(--accent-soft);
 }
 
 .care-card.is-featured {
-  background: linear-gradient(150deg, rgba(110, 162, 255, 0.17), rgba(167, 139, 250, 0.06));
-  border-color: rgba(110, 162, 255, 0.55);
+  background: linear-gradient(180deg, rgb(var(--accent-rgb) / 0.12), rgb(var(--accent-rgb) / 0.03) 45%, rgb(255 255 255 / 0.015));
+  border-color: rgb(var(--accent-rgb) / 0.5);
 }
 
 .care-card.is-featured .care-badge {
-  background: var(--azulejo);
-  border-color: var(--azulejo);
+  background: var(--accent);
+  border-color: var(--accent);
   color: var(--on-accent);
 }
 
 .care-badge {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 0.05);
 }
 
 .care-card.is-featured .care-price,
 .care-card.is-featured .care-bestfor {
-  border-color: var(--line);
+  border-color: var(--border);
 }
 
 .care-note {
-  border-left-color: rgba(94, 231, 255, 0.4);
+  border-left-color: rgb(var(--accent-rgb) / 0.4);
 }
 
 /* Cards carry numbers: keep digits from jittering during count-up */
@@ -304,51 +313,24 @@ a.cm-value:hover {
 
 .btn-primary,
 .pkg.is-featured .pkg-cta {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: linear-gradient(100deg, var(--cyan), var(--blue) 52%, var(--violet));
-  background-size: 160% 100%;
-  background-position: 0% 0;
+  background: var(--accent);
   color: var(--on-accent);
   font-weight: 600;
-  box-shadow: 0 10px 32px -12px rgba(94, 231, 255, 0.55);
-  transition: transform 0.16s ease, background-position 0.5s ease,
-    box-shadow 0.25s ease, opacity 0.2s ease;
+  transition: transform 0.16s ease, background 0.2s ease, opacity 0.2s ease;
 }
 
 .btn-primary:hover,
 .pkg.is-featured .pkg-cta:hover {
-  background: linear-gradient(100deg, var(--cyan), var(--blue) 52%, var(--violet));
-  background-size: 160% 100%;
-  background-position: 100% 0;
-  box-shadow: 0 14px 40px -10px rgba(110, 162, 255, 0.7);
-}
-
-/* Light sheen sweeping across on hover */
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%);
-  translate: -130% 0;
-  transition: translate 0.7s var(--ease);
-  pointer-events: none;
-}
-
-.btn-primary:hover::after {
-  translate: 130% 0;
+  background: var(--accent-soft);
 }
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgb(255 255 255 / 0.025);
 }
 
 .btn-ghost:hover {
-  border-color: var(--cyan);
-  background: rgba(94, 231, 255, 0.07);
-  box-shadow: 0 0 24px -8px rgba(94, 231, 255, 0.5);
+  border-color: rgb(var(--accent-rgb) / 0.6);
+  background: rgb(var(--accent-rgb) / 0.07);
 }
 
 /* ─── 5. Form ────────────────────────────────────────────── */
@@ -356,33 +338,33 @@ a.cm-value:hover {
 .field input,
 .field select,
 .field textarea {
-  background: rgba(7, 12, 28, 0.7);
-  border-color: rgba(150, 180, 255, 0.22);
-  color: var(--ink);
+  background: rgb(8 12 22 / 0.7);
+  border-color: rgb(255 255 255 / 0.14);
+  color: var(--text);
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: var(--cyan);
-  background: rgba(10, 18, 40, 0.88);
-  box-shadow: 0 0 0 3px rgba(94, 231, 255, 0.18), 0 0 26px -4px rgba(94, 231, 255, 0.5);
+  border-color: var(--accent);
+  background: rgb(10 15 28 / 0.88);
+  box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / 0.22);
 }
 
 .field select option {
-  background: #0b1224;
-  color: #e9eefb;
+  background: var(--surface-solid);
+  color: var(--text);
 }
 
 .field input:-webkit-autofill,
 .field textarea:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px #0b1224 inset;
-  -webkit-text-fill-color: #e9eefb;
-  caret-color: #e9eefb;
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-solid) inset;
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
 }
 
 .form-ok {
-  color: #3df0b4;
+  color: var(--success);
 }
 
 .form-err {
@@ -391,25 +373,14 @@ a.cm-value:hover {
 
 /* ─── 6. Typography accents ──────────────────────────────── */
 
+/* Solid accent with the thin underline from the original design */
 .hero-title em {
-  background: linear-gradient(100deg, var(--cyan), var(--blue), var(--violet), var(--magenta), var(--cyan));
-  background-size: 260% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  animation: holoShift 8s linear infinite;
+  color: var(--accent);
 }
 
 .hero-title em::after {
-  background: var(--holo);
-  opacity: 0.55;
-}
-
-@keyframes holoShift {
-  to {
-    background-position: -260% 0;
-  }
+  background: var(--accent);
+  opacity: 0.4;
 }
 
 .eyebrow::before {
@@ -420,10 +391,9 @@ a.cm-value:hover {
   height: 1px;
   margin: -2px 12px 0 0;
   background: linear-gradient(90deg, transparent, currentColor);
-  box-shadow: 0 0 10px currentColor;
 }
 
-/* Thin gradient divider that draws itself in as a section arrives */
+/* Thin single-hue divider that draws itself in as a section arrives */
 .section::before {
   content: '';
   position: absolute;
@@ -431,8 +401,7 @@ a.cm-value:hover {
   left: var(--gutter);
   right: var(--gutter);
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
-  opacity: 0.55;
+  background: linear-gradient(90deg, transparent, rgb(var(--accent-rgb) / 0.5), transparent);
   transition: scale 1.4s var(--ease);
 }
 
@@ -461,21 +430,21 @@ a.cm-value:hover {
 .fx-blob.b1 {
   left: -20vmax;
   top: -24vmax;
-  background: radial-gradient(closest-side, rgba(94, 231, 255, 0.2), transparent);
+  background: radial-gradient(closest-side, rgb(var(--accent-rgb) / 0.07), transparent);
   animation: drift1 40s ease-in-out infinite alternate;
 }
 
 .fx-blob.b2 {
   right: -24vmax;
   top: 8vh;
-  background: radial-gradient(closest-side, rgba(167, 139, 250, 0.22), transparent);
+  background: radial-gradient(closest-side, rgb(var(--accent-rgb) / 0.07), transparent);
   animation: drift2 46s ease-in-out infinite alternate;
 }
 
 .fx-blob.b3 {
   left: 12vw;
   bottom: -34vmax;
-  background: radial-gradient(closest-side, rgba(255, 122, 217, 0.13), rgba(110, 162, 255, 0.06) 55%, transparent);
+  background: radial-gradient(closest-side, rgb(var(--accent-rgb) / 0.045), transparent);
   animation: drift3 52s ease-in-out infinite alternate;
 }
 
@@ -517,8 +486,7 @@ a.cm-value:hover {
 .fx-progress i {
   display: block;
   height: 100%;
-  background: var(--holo);
-  box-shadow: 0 0 12px rgba(94, 231, 255, 0.8);
+  background: var(--accent);
   transform: scaleX(0);
   transform-origin: 0 50%;
 }
@@ -548,22 +516,20 @@ a.cm-value:hover {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  border: 1px solid rgba(190, 210, 255, 0.55);
+  border: 1px solid rgb(255 255 255 / 0.4);
   background: transparent;
-  transition: transform 0.25s var(--ease), background 0.25s ease, box-shadow 0.25s ease,
-    border-color 0.25s ease;
+  transition: transform 0.25s var(--ease), background 0.25s ease, border-color 0.25s ease;
 }
 
 .fx-rail a:hover::before,
 .fx-rail a:focus-visible::before {
-  border-color: var(--cyan);
+  border-color: var(--accent-soft);
 }
 
 .fx-rail a.is-active::before {
-  transform: scale(1.5);
-  background: var(--cyan);
-  border-color: var(--cyan);
-  box-shadow: 0 0 12px 2px rgba(94, 231, 255, 0.7);
+  transform: scale(1.4);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .fx-rail-label {
@@ -574,15 +540,15 @@ a.cm-value:hover {
   translate: 6px -50%;
   padding: 4px 10px;
   border-radius: 100px;
-  border: 1px solid var(--glass-border);
-  background: rgba(8, 13, 30, 0.85);
+  border: 1px solid var(--border);
+  background: rgb(10 15 26 / 0.9);
   backdrop-filter: blur(8px);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: var(--ink);
+  color: var(--text);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, translate 0.25s var(--ease);
@@ -727,9 +693,9 @@ a.cm-value:hover {
   z-index: 4;
   pointer-events: none;
   opacity: 0;
-  background: linear-gradient(90deg, var(--cyan), var(--violet)) 0 18px / 100% 2px no-repeat,
-    linear-gradient(to bottom, transparent, rgba(110, 190, 255, 0.28)) 0 0 / 100% 18px no-repeat,
-    linear-gradient(to bottom, rgba(150, 140, 255, 0.18), transparent) 0 20px / 100% 10px no-repeat;
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft)) 0 18px / 100% 2px no-repeat,
+    linear-gradient(to bottom, transparent, rgb(var(--accent-rgb) / 0.22)) 0 0 / 100% 18px no-repeat,
+    linear-gradient(to bottom, rgb(var(--accent-rgb) / 0.12), transparent) 0 20px / 100% 10px no-repeat;
   translate: 0 -18px;
 }
 
@@ -761,7 +727,7 @@ a.cm-value:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(140, 200, 255, 0.12) 45%, rgba(190, 160, 255, 0.14) 55%, transparent 70%);
+  background: linear-gradient(105deg, transparent 30%, rgb(var(--accent-rgb) / 0.1) 50%, transparent 70%);
   translate: -100% 0;
   animation: thumbShimmer 3.2s ease-in-out infinite;
   pointer-events: none;
@@ -788,7 +754,11 @@ a.cm-value:hover {
   }
 }
 
-/* Process: glowing line draws across, numbers sit in glowing circles */
+/* ─── Process ─────────────────────────────────────────────
+   Desktop/tablet: a line draws across the steps, numbers sit in circles
+   on it. Phones (≤620px): see the vertical timeline at the end of this
+   section. */
+
 .steps {
   position: relative;
 }
@@ -800,8 +770,7 @@ a.cm-value:hover {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--holo);
-  box-shadow: 0 0 14px rgba(94, 231, 255, 0.7), 0 0 34px rgba(167, 139, 250, 0.35);
+  background: var(--accent);
   transform-origin: 0 50%;
   transition: scale 1.8s cubic-bezier(0.45, 0, 0.2, 1) 0.15s;
 }
@@ -815,7 +784,7 @@ a.cm-value:hover {
 }
 
 .step::before {
-  display: none; /* old green marker, replaced by the glowing circle */
+  display: none; /* old green marker, replaced by the numbered circle */
 }
 
 .step-n {
@@ -827,11 +796,13 @@ a.cm-value:hover {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: var(--cyan);
-  background: radial-gradient(circle, #123049, #08101f 72%); /* opaque so the line never shows through the digits */
-  border: 1px solid rgba(94, 231, 255, 0.65);
-  box-shadow: 0 0 20px rgba(94, 231, 255, 0.45), inset 0 0 12px rgba(94, 231, 255, 0.18);
+  color: var(--accent-soft);
+  /* opaque so the line never shows through the digits */
+  background: var(--surface-solid);
+  border: 1px solid rgb(var(--accent-rgb) / 0.55);
+  box-shadow: 0 0 0 4px rgb(var(--accent-rgb) / 0.07);
   font-weight: 500;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease;
 }
 
 .step:not(:first-child) .step-n {
@@ -842,18 +813,76 @@ a.cm-value:hover {
   margin-top: 0;
 }
 
+/* Phones: one vertical timeline. A dim track runs down the left through every
+   circle; a brighter fill grows as you scroll (FX.jsx sets --steps-progress
+   0..1 and --steps-tail on .steps, and data-lit on each .step the fill has
+   reached). Circles are centred on the line, text sits to their right. */
 @media (max-width: 620px) {
-  .step:not(:first-child) .step-n {
-    left: 0;
+  .steps {
+    --steps-progress: 0;
+    --steps-tail: 0px;
+    isolation: isolate; /* keep the line behind the circles */
+    margin-top: 48px;
+    border-top: 0;
   }
 
-  /* Stacked steps: leave room for the next circle that overlaps this step's bottom edge */
-  .process .step {
-    padding-bottom: 30px;
+  /* track */
+  .steps::before,
+  .steps.fx-line:not(.is-in)::before {
+    left: 20px;
+    right: auto;
+    top: 21px;
+    bottom: var(--steps-tail);
+    width: 2px;
+    height: auto;
+    z-index: -1;
+    background: rgb(var(--accent-rgb) / 0.2);
+    border-radius: 2px;
+    scale: none;
+    transition: none;
+  }
+
+  /* fill */
+  .steps::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 21px;
+    bottom: var(--steps-tail);
+    width: 2px;
+    z-index: -1;
+    background: var(--accent);
+    border-radius: 2px;
+    transform-origin: 50% 0;
+    scale: 1 var(--steps-progress);
+  }
+
+  .process .steps .step {
+    padding: 9px 0 34px 52px;
+    border: 0;
+    margin-top: 0;
+  }
+
+  .process .steps .step:last-child {
+    padding-bottom: 0;
+  }
+
+  .process .steps .step .step-n {
+    left: 0;
+    top: 0;
+    color: var(--text-soft);
+    border-color: rgb(var(--accent-rgb) / 0.28);
+    box-shadow: none;
+  }
+
+  .process .steps .step[data-lit] .step-n {
+    color: var(--accent-soft);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgb(var(--accent-rgb) / 0.1), 0 0 14px rgb(var(--accent-rgb) / 0.3);
   }
 }
 
-/* ─── 9. 3D tilt + holographic sheen (fine pointer only) ── */
+/* ─── 9. 3D tilt + soft sheen (fine pointer only) ────────── */
 
 .work-card.fx-tilt,
 .pkg.fx-tilt,
@@ -883,8 +912,7 @@ a.cm-value:hover {
   mix-blend-mode: screen;
   opacity: 0;
   transition: opacity 0.3s ease;
-  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.13), transparent 60%),
-    radial-gradient(460px circle at var(--mx, 50%) var(--my, 50%), rgba(94, 231, 255, 0.18), rgba(167, 139, 250, 0.15) 45%, rgba(255, 122, 217, 0.1) 65%, transparent 82%);
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.09), rgb(var(--accent-rgb) / 0.07) 45%, transparent 72%);
 }
 
 .is-tilting::after {
@@ -911,6 +939,7 @@ a.cm-value:hover {
   perspective: 360px;
   perspective-origin: 50% 0;
   overflow: hidden;
+  opacity: 0.25;
   pointer-events: none;
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 38%, #000 66%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 38%, #000 66%, transparent);
@@ -932,8 +961,8 @@ a.cm-value:hover {
   right: 0;
   top: -64px;
   bottom: 0;
-  background-image: linear-gradient(rgba(94, 231, 255, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(110, 162, 255, 0.24) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(var(--accent-rgb) / 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--accent-rgb) / 0.45) 1px, transparent 1px);
   background-size: 64px 64px;
   animation: floorMove 2.4s linear infinite;
 }
@@ -955,6 +984,7 @@ a.cm-value:hover {
 
 .orbit {
   --s: clamp(300px, 44vw, 560px);
+  --c: var(--accent);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -977,35 +1007,37 @@ a.cm-value:hover {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1px solid rgba(150, 180, 255, 0.16);
-  border-top-color: var(--c);
-  border-right-color: color-mix(in srgb, var(--c) 40%, transparent);
+  border: 1px solid rgb(var(--accent-rgb) / 0.1);
+  border-top-color: rgb(var(--accent-rgb) / 0.3);
   animation: orbitSpin var(--t, 24s) linear infinite;
 }
 
+/* Fewer, fainter beads: the outer ring has none */
 .orbit-spin::after {
   content: '';
   position: absolute;
-  top: -4px;
+  top: -3px;
   left: 50%;
-  width: 8px;
-  height: 8px;
-  margin-left: -4px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
   border-radius: 50%;
-  background: var(--c);
-  box-shadow: 0 0 12px 3px var(--c);
+  background: var(--accent-soft);
+  opacity: 0.55;
+}
+
+.orbit.o3 .orbit-spin::after {
+  display: none;
 }
 
 .orbit.o1 {
   --rx: 68deg;
   --ry: -14deg;
-  --c: var(--cyan);
 }
 
 .orbit.o2 {
   --rx: 62deg;
   --ry: 28deg;
-  --c: var(--violet);
 }
 
 .orbit.o2 .orbit-spin {
@@ -1016,7 +1048,6 @@ a.cm-value:hover {
 .orbit.o3 {
   --rx: 76deg;
   --ry: 4deg;
-  --c: var(--magenta);
 }
 
 .orbit.o3 .orbit-spin {
@@ -1041,7 +1072,7 @@ a.cm-value:hover {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px);
+  background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px);
 }
 
 .hero .terminal::before {
@@ -1053,10 +1084,10 @@ a.cm-value:hover {
   height: 40%;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(94, 231, 255, 0.11) 70%, rgba(94, 231, 255, 0.25));
-  border-bottom: 1px solid rgba(94, 231, 255, 0.35);
+  background: linear-gradient(to bottom, transparent, rgb(var(--accent-rgb) / 0.05) 70%, rgb(var(--accent-rgb) / 0.12));
+  border-bottom: 1px solid rgb(var(--accent-rgb) / 0.2);
   translate: 0 -100%;
-  animation: termScan 6s linear infinite;
+  animation: termScan 7s linear infinite;
 }
 
 @keyframes termScan {
@@ -1065,6 +1096,7 @@ a.cm-value:hover {
   }
 }
 
+/* Flat chips: no glow */
 .hud-chip {
   position: absolute;
   z-index: 2;
@@ -1077,14 +1109,13 @@ a.cm-value:hover {
   gap: 9px;
   padding: 8px 15px;
   border-radius: 100px;
-  border: 1px solid var(--glass-border);
-  background: rgba(10, 16, 36, 0.72);
+  border: 1px solid var(--border);
+  background: rgb(14 20 34 / 0.78);
   backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px -12px rgba(94, 231, 255, 0.4);
   font-family: var(--font-mono);
   font-size: 11.5px;
   letter-spacing: 0.04em;
-  color: var(--ink);
+  color: var(--text);
   animation: chipFloat var(--t, 6s) ease-in-out infinite alternate;
 }
 
@@ -1093,21 +1124,20 @@ a.cm-value:hover {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--c, var(--signal));
-  box-shadow: 0 0 10px var(--c, var(--signal));
+  background: var(--c, var(--accent));
 }
 
 .hud-chip.c1 {
   top: -26px;
   left: 50%;
-  --c: var(--signal);
+  --c: var(--success);
   --k: 30;
 }
 
 .hud-chip.c2 {
   top: 40%;
   right: -2%;
-  --c: var(--cyan);
+  --c: var(--accent);
   --k: 22;
   --t: 7.5s;
 }
@@ -1115,44 +1145,41 @@ a.cm-value:hover {
 .hud-chip.c3 {
   bottom: -20px;
   left: 10%;
-  --c: var(--magenta);
+  --c: var(--accent-soft);
   --k: 34;
   --t: 6.5s;
 }
 
 @keyframes chipFloat {
   from {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
   to {
-    transform: translateY(6px);
+    transform: translateY(5px);
   }
 }
 
 /* ─── 11. Portfolio: the live project ────────────────────── */
 
 .work-card.is-live {
-  border-color: rgba(94, 231, 255, 0.32);
-  box-shadow: 0 30px 70px -34px rgba(94, 231, 255, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgb(var(--accent-rgb) / 0.3);
 }
 
 .work-live {
-  background: rgba(6, 12, 26, 0.78);
-  border: 1px solid rgba(25, 230, 161, 0.5);
-  color: #5dfbc7;
+  background: rgb(10 15 26 / 0.8);
+  border: 1px solid var(--border);
+  color: var(--text);
   backdrop-filter: blur(8px);
 }
 
 .work-live i {
-  background: var(--signal);
-  box-shadow: 0 0 10px var(--signal);
-  animation: livePulse 2s ease-in-out infinite;
+  background: var(--success);
+  animation: livePulse 2.4s ease-in-out infinite;
 }
 
 @keyframes livePulse {
   50% {
-    opacity: 0.35;
+    opacity: 0.4;
   }
 }
 
@@ -1163,7 +1190,7 @@ a.cm-value:hover {
 }
 
 .lightbox-close {
-  color: var(--ink);
+  color: var(--text);
 }
 
 @media (max-width: 860px) {
@@ -1174,7 +1201,7 @@ a.cm-value:hover {
   .contact-form {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    background: linear-gradient(150deg, rgba(22, 32, 62, 0.82), rgba(12, 18, 38, 0.8));
+    background: linear-gradient(150deg, rgb(24 31 48 / 0.84), rgb(16 22 36 / 0.82));
   }
 
   .fx-r[data-fx='left'] {
@@ -1199,8 +1226,6 @@ a.cm-value:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .fx-blob,
-  .pkg.is-featured::before,
-  .hero-title em,
   .floor-grid,
   .orbit-spin,
   .hero .terminal::before,

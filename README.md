@@ -85,6 +85,26 @@ div for an `<img>`.
 
 ---
 
+## Themes
+
+All colours come from a handful of CSS custom properties defined in
+`src/styles/holo.css` (`--accent-rgb`, `--accent`, `--accent-soft`, `--bg`,
+`--surface`, `--border`, `--text`, `--text-soft`, `--success`). A theme only
+overrides those tokens, so a seasonal look (Halloween, Christmas) is a small
+block in `src/styles/themes.css`, not a redesign.
+
+**Switch theme:** set `theme` in `src/siteConfig.js` (`'default'`, and later
+`'halloween'` or `'christmas'`) and deploy. `main.jsx` writes it to
+`<html data-theme="...">` before the first render. No seasonal theme is built
+yet; `themes.css` has a commented-out example to copy from.
+
+**Go back to the baseline:** the stable holographic-redesign release is tagged
+`v1.0-holo`. To look at it: `git checkout v1.0-holo` (read-only, detached
+HEAD; `git checkout main` returns you). To undo a bad deploy quickly, roll
+back to the previous deployment in the Cloudflare dashboard.
+
+---
+
 ## Making the contact form work
 
 The form is built but not connected. It needs no backend — pick one:

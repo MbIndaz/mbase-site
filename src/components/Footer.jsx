@@ -16,8 +16,8 @@ export default function Footer() {
         </div>
 
         <nav className="footer-nav">
-          <a href="#work">Work</a>
           <a href="#process">Process</a>
+          <a href="#work">Work</a>
           <a href="#packages">Packages</a>
           <a href="#contact">Contact</a>
         </nav>

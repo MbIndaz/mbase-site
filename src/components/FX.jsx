@@ -10,20 +10,23 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 const RAIL = [
   { id: 'top', label: 'Top' },
-  { id: 'work', label: 'Work' },
   { id: 'process', label: 'Process' },
+  { id: 'work', label: 'Work' },
   { id: 'packages', label: 'Packages' },
   { id: 'care', label: 'Care' },
   { id: 'contact', label: 'Contact' },
 ]
 
-// cyan, blue, violet, magenta — matches the tokens in holo.css
-const PALETTE = [
-  [94, 231, 255],
-  [110, 162, 255],
-  [167, 139, 250],
-  [255, 122, 217],
-]
+// Particle colour comes from the --accent-rgb token, so a theme recolours
+// the canvas too. Falls back to the default accent if the token is missing.
+const readAccent = () => {
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue('--accent-rgb')
+    .trim()
+    .split(/\s+/)
+    .map(Number)
+  return v.length === 3 && v.every(Number.isFinite) ? v : [91, 141, 239]
+}
 
 const prefersReduced = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -255,12 +258,12 @@ function setupCanvas(canvas) {
       vx: (Math.random() - 0.5) * 30, // px per second
       vy: (Math.random() - 0.5) * 30,
       z: 0.35 + Math.random() * 0.65, // depth: 1 is nearest
-      c: (Math.random() * PALETTE.length) | 0,
       px: 0,
       py: 0,
     }))
 
-  const fills = PALETTE.map(([r, g, b]) => `rgb(${r},${g},${b})`)
+  const [ar, ag, ab] = readAccent()
+  const dotFill = `rgb(${ar},${ag},${ab})`
   const BUCKETS = 4
   const buckets = Array.from({ length: BUCKETS }, () => [])
 
@@ -300,7 +303,7 @@ function setupCanvas(canvas) {
     ctx.lineWidth = 1
     buckets.forEach((b, k) => {
       if (!b.length) return
-      ctx.strokeStyle = `rgba(110,162,255,${(((k + 1) / BUCKETS) * 0.2).toFixed(3)})`
+      ctx.strokeStyle = `rgba(${ar},${ag},${ab},${(((k + 1) / BUCKETS) * 0.12).toFixed(3)})`
       ctx.beginPath()
       for (let n = 0; n < b.length; n += 2) {
         ctx.moveTo(pts[b[n]].px, pts[b[n]].py)
@@ -317,7 +320,7 @@ function setupCanvas(canvas) {
         const dy = p.py - pointer.y
         const d = Math.sqrt(dx * dx + dy * dy)
         if (d < reach) {
-          ctx.strokeStyle = `rgba(94,231,255,${((1 - d / reach) * 0.55).toFixed(3)})`
+          ctx.strokeStyle = `rgba(${ar},${ag},${ab},${((1 - d / reach) * 0.28).toFixed(3)})`
           ctx.beginPath()
           ctx.moveTo(p.px, p.py)
           ctx.lineTo(pointer.x, pointer.y)
@@ -327,8 +330,8 @@ function setupCanvas(canvas) {
     }
 
     for (const p of pts) {
-      ctx.globalAlpha = 0.3 + 0.6 * p.z
-      ctx.fillStyle = fills[p.c]
+      ctx.globalAlpha = 0.18 + 0.4 * p.z
+      ctx.fillStyle = dotFill
       ctx.beginPath()
       ctx.arc(p.px, p.py, 0.7 + p.z * 1.1, 0, Math.PI * 2)
       ctx.fill()
@@ -352,7 +355,7 @@ function setupCanvas(canvas) {
     W = nw
     H = nh
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    const want = isMobile() ? 34 : 80
+    const want = isMobile() ? 24 : 55
     if (pts.length !== want) pts = makePoints(want)
     if (reduced) draw(0)
   }
@@ -463,11 +466,46 @@ function setupPointer() {
   }
 }
 
-/* ─── Scroll progress ───────────────────────────────────── */
+/* ─── Scroll progress + mobile "How it works" timeline ──── */
 
+// One rAF-throttled scroll loop drives both: the top progress bar, and on
+// phones the vertical timeline in Process (--steps-progress / data-lit).
 function setupProgress(bar) {
   if (!bar) return
+  const steps = document.querySelector('.steps')
+  const items = steps ? [...steps.querySelectorAll('.step')] : []
+  const narrow = window.matchMedia('(max-width: 620px)')
+  const reduced = prefersReduced()
+  const CENTRE = 21 // half of the 42px number circle
   let raf = 0
+  let lastTail = ''
+  const lit = new Array(items.length).fill(null)
+
+  const updateSteps = () => {
+    if (!steps || items.length < 2 || !narrow.matches) return
+    // reads first, then writes
+    const top = steps.getBoundingClientRect().top
+    const firstY = items[0].offsetTop + CENTRE
+    const lastY = items[items.length - 1].offsetTop + CENTRE
+    const span = Math.max(1, lastY - firstY)
+    const tail = `${Math.max(0, steps.offsetHeight - lastY)}px`
+    // the fill front sits 60% of the way down the screen
+    const reach = window.innerHeight * 0.6 - (top + firstY)
+    const p = reduced ? 1 : Math.min(1, Math.max(0, reach / span))
+
+    steps.style.setProperty('--steps-progress', p.toFixed(3))
+    if (tail !== lastTail) {
+      steps.style.setProperty('--steps-tail', tail)
+      lastTail = tail
+    }
+    items.forEach((el, i) => {
+      const on = reduced || reach >= el.offsetTop + CENTRE - firstY - 0.5
+      if (lit[i] === on) return
+      lit[i] = on
+      if (on) el.dataset.lit = ''
+      else delete el.dataset.lit
+    })
+  }
 
   const update = () => {
     raf = 0
@@ -475,6 +513,7 @@ function setupProgress(bar) {
     const max = h.scrollHeight - h.clientHeight
     const p = max > 0 ? Math.min(1, window.scrollY / max) : 0
     bar.style.transform = `scaleX(${p.toFixed(4)})`
+    updateSteps()
   }
   const onScroll = () => {
     if (!raf) raf = requestAnimationFrame(update)
@@ -487,6 +526,11 @@ function setupProgress(bar) {
     cancelAnimationFrame(raf)
     window.removeEventListener('scroll', onScroll)
     window.removeEventListener('resize', onScroll)
+    items.forEach((el) => delete el.dataset.lit)
+    if (steps) {
+      steps.style.removeProperty('--steps-progress')
+      steps.style.removeProperty('--steps-tail')
+    }
   }
 }
 
